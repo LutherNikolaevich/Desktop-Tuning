@@ -1397,6 +1397,16 @@ It isn't a bad idea to skim through both the legacy and immersive control panel 
 
 Ensure that Xbox Game Bar acknowledges the game that you are running or have installed. If not, open Game Bar by pressing ``Win+G`` and enabling ``Remember this is a game`` while it is open. This also ensures that Game Mode functions properly if you choose to use it.
 
+Close Game Bar, then reopen it and check whether ``Remember this is a game`` remains enabled. If it has reset, you may need to temporarily configure the registry entries below if they were previously changed (mostly relevant to Windows 11 as Game Bar opens regardless).
+
+```
+[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR]
+"AppCaptureEnabled"=dword:00000001
+
+[HKEY_CURRENT_USER\System\GameConfigStore]
+"GameDVR_Enabled"=dword:00000001
+```
+
 <h3 id="presentation-mode">11.41.4. Presentation Mode <a href="#presentation-mode">(permalink)</a></h3>
 
 > [!CAUTION]
@@ -1410,7 +1420,7 @@ This is not a recommendation of what presentation mode to use and is instead, he
 
   - See [Presentation Model | Special K Wiki](https://wiki.special-k.info/en/Presentation_Model)
 
-- If there are no results after searching for the application's binary name in ``HKCU\SYSTEM\GameConfigStore`` within registry, you may need to register the game by pressing ``Win+G`` and enabling ``Remember this is a game`` while it is open. Check whether the entry has been created under the aforementioned registry key once completed
+- To prevent any potential issues with desired presentation modes, ensure that an entry for the game's binary name can be found when searching for it under ``HKCU\SYSTEM\GameConfigStore`` within registry. If not, see section [Register Game in Config Store](#register-game) then search again
 
 - If you want to use the ``Hardware: Legacy Flip`` presentation mode, tick the ``Disable fullscreen optimizations`` checkbox. If that doesn't work, try running the commands below in CMD and reboot. These registry keys are typically accessed by the game and Windows upon launch
 
