@@ -113,15 +113,15 @@
   - [11.38. Message Signaled Interrupts](#message-signaled-interrupts)
   - [11.39. XHCI Interrupt Moderation (IMOD)](#xhci-interrupt-moderation-imod)
   - [11.40. Control Panel](#control-panel)
-  - [11.41. Configuring Applications](#configuring-applications)
-    - [11.41.1 NVIDIA Reflex](#nvidia-reflex)
-    - [11.41.2 Framerate Limit](#framerate-limit)
-    - [11.41.3. Register Game in Config Store](#register-game)
-    - [11.41.4 Presentation Mode](#presentation-mode)
-    - [11.41.5. Game Mode](#game-mode)
-    - [11.41.6. Media Player](#media-player)
-    - [11.41.7. QoS Policies](#qos-policies)
-  - [11.42. Game Bar](#game-bar)
+  - [11.41. Game Bar](#game-bar)
+  - [11.42. Configuring Applications](#configuring-applications)
+    - [11.42.1 NVIDIA Reflex](#nvidia-reflex)
+    - [11.42.2 Framerate Limit](#framerate-limit)
+    - [11.42.3. Register Game in Config Store](#register-game)
+    - [11.42.4 Presentation Mode](#presentation-mode)
+    - [11.42.5. Game Mode](#game-mode)
+    - [11.42.6. Media Player](#media-player)
+    - [11.42.7. QoS Policies](#qos-policies)
   - [11.43. Kernel-Mode Scheduling (Interrupts, DPCs and more)](#kernel-mode-scheduling-interrupts-dpcs-and-more)
     - [11.43.1. GPU and DirectX Graphics Kernel](#gpu-and-directx-graphics-kernel)
     - [11.43.2. XHCI and Audio Controller](#xhci-and-audio-controller)
@@ -1367,13 +1367,31 @@ As an example, 1ms IMOD interval with an 8kHz mouse is already problematic becau
 
 It isn't a bad idea to skim through both the legacy and immersive control panel to ensure nothing is misconfigured.
 
-<h2 id="configuring-applications">11.41. Configuring Applications <a href="#configuring-applications">(permalink)</a></h2>
+<h2 id="game-bar">11.41. Game Bar <a href="#game-bar">(permalink)</a></h2>
+
+As explained in section [Register Game in Config Store](#register-game), Game Bar is needed to carry out the outlined steps. Depending on your configuration, Game Bar may or may not run each time a game is launched. If Game Bar access isn't frequently required, it can be disabled until it is needed (e.g. to register a new game in the config store). If Game Bar doesn't automatically launch, then it can be left enabled. Windows 11+ removed the option to toggle Game Bar in the settings so open CMD as administrator and use the commands below to toggle Game Bar.
+
+<h3 id="enable-game-bar-default">11.41.1. Enable Game Bar (default) <a href="#enable-game-bar-default">(permalink)</a></h3>
+
+```bat
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d "1" /f
+reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "1" /f
+```
+
+<h3 id="disable-game-bar">11.41.1. Disable Game Bar <a href="#disable-game-bar">(permalink)</a></h3>
+
+```bat
+reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d "0" /f
+reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "0" /f
+```
+
+<h2 id="configuring-applications">11.42. Configuring Applications <a href="#configuring-applications">(permalink)</a></h2>
 
 - Install any programs and applications that you use (including games) to prepare us for the next steps
 
 - If applicable, favor portable editions of programs as installers tend to leave bloatware behind even after uninstalling them however, this can be circumvented by using programs such as [Bulk-Crap-Uninstaller](https://github.com/Klocman/Bulk-Crap-Uninstaller)
 
-<h3 id="nvidia-reflex">11.41.1. NVIDIA Reflex <a href="#nvidia-reflex">(permalink)</a></h3>
+<h3 id="nvidia-reflex">11.42.1. NVIDIA Reflex <a href="#nvidia-reflex">(permalink)</a></h3>
 
 > [!CAUTION]
 > 📊 **Do NOT** blindly follow the recommendations in this section. **Do** benchmark the specified changes to ensure they result in positive performance scaling, as every system behaves differently and changes could unintentionally degrade performance ([instructions](#benchmarking)).
@@ -1382,7 +1400,7 @@ It isn't a bad idea to skim through both the legacy and immersive control panel 
 
 - See [NVIDIA Reflex Low Latency - How It Works & Why You Want To Use It | Battle(non)sense](https://www.youtube.com/watch?v=QzmoLJwS6eQ)
 
-<h3 id="framerate-limit">11.41.2. Framerate Limit <a href="#framerate-limit">(permalink)</a></h3>
+<h3 id="framerate-limit">11.42.2. Framerate Limit <a href="#framerate-limit">(permalink)</a></h3>
 
 > [!CAUTION]
 > 📊 **Do NOT** blindly follow the recommendations in this section. **Do** benchmark the specified changes to ensure they result in positive performance scaling, as every system behaves differently and changes could unintentionally degrade performance ([instructions](#benchmarking)).
@@ -1393,21 +1411,15 @@ It isn't a bad idea to skim through both the legacy and immersive control panel 
 
 - Capping your framerate with [RTSS](https://www.guru3d.com/files-details/rtss-rivatuner-statistics-server-download.html) instead of the in-game limiter will result in consistent frame pacing and a smoother experience as it utilizes busy-wait which offers higher precision than 100% passive-waiting but at the cost of noticeably higher latency and potentially greater CPU overhead ([1](https://www.youtube.com/watch?t=377&v=T2ENf9cigSk), [2](https://en.wikipedia.org/wiki/Busy_waiting)). Disabling the ``Enable dedicated encoder server service`` setting prevents ``EncoderServer.exe`` from running
 
-<h3 id="register-game">11.41.3. Register Game in Config Store <a href="#register-game">(permalink)</a></h3>
+<h3 id="register-game">11.42.3. Register Game in Config Store <a href="#register-game">(permalink)</a></h3>
 
-Ensure that Xbox Game Bar acknowledges the game that you are running or have installed. If not, open Game Bar by pressing ``Win+G`` and enabling ``Remember this is a game`` while it is open. This also ensures that Game Mode functions properly if you choose to use it.
+Temporarily enable Game Bar if it is disabled as described in section [Game Bar](#game-bar) (even if it opens regardless e.g. on Windows 11 to avoid specific issues).
 
-Close Game Bar, then reopen it and check whether ``Remember this is a game`` remains enabled. If it has reset, you may need to temporarily configure the registry entries below if they were previously changed (mostly relevant to Windows 11 as Game Bar opens regardless).
+Ensure that Game Bar acknowledges the game that you are running or have installed. If not, open Game Bar by pressing ``Win+G`` and enabling ``Remember this is a game`` while it is open. This also ensures that Game Mode functions properly if you choose to use it.
 
-```
-[HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\GameDVR]
-"AppCaptureEnabled"=dword:00000001
+Close Game Bar, then reopen it and check whether ``Remember this is a game`` remains enabled. If it has reset, it is likely that Game Bar needs to properly be enabled as described in section [Game Bar](#game-bar).
 
-[HKEY_CURRENT_USER\System\GameConfigStore]
-"GameDVR_Enabled"=dword:00000001
-```
-
-<h3 id="presentation-mode">11.41.4. Presentation Mode <a href="#presentation-mode">(permalink)</a></h3>
+<h3 id="presentation-mode">11.42.4. Presentation Mode <a href="#presentation-mode">(permalink)</a></h3>
 
 > [!CAUTION]
 > 📊 **Do NOT** blindly follow the recommendations in this section. **Do** benchmark the specified changes to ensure they result in positive performance scaling, as every system behaves differently and changes could unintentionally degrade performance ([instructions](#benchmarking)).
@@ -1438,7 +1450,7 @@ This is not a recommendation of what presentation mode to use and is instead, he
     reg add "HKLM\SOFTWARE\Microsoft\Windows\Dwm" /v "OverlayTestMode" /t REG_DWORD /d "5" /f
     ```
 
-<h3 id="game-mode">11.41.5. Game Mode <a href="#game-mode">(permalink)</a></h3>
+<h3 id="game-mode">11.42.5. Game Mode <a href="#game-mode">(permalink)</a></h3>
 
 > [!CAUTION]
 > 📊 **Do NOT** blindly follow the recommendations in this section. **Do** benchmark the specified changes to ensure they result in positive performance scaling, as every system behaves differently and changes could unintentionally degrade performance ([instructions](#benchmarking)).
@@ -1447,13 +1459,13 @@ Game Mode prevents Windows Update running and certain notifications from being p
 
 It is worth noting that Game Mode can intefere with process and thread priority boosts. This is evident by replicating the listening to thread priority boosts experiment in Windows Internals using Performance Monitor and the thread current priority performance counter. For this reason, you can experiment with Game Mode enabled and disabled.
 
-<h3 id="media-player">11.41.6. Media Player <a href="#media-player">(permalink)</a></h3>
+<h3 id="media-player">11.42.6. Media Player <a href="#media-player">(permalink)</a></h3>
 
 - [mpv](https://mpv.io) or [mpv.net](https://github.com/stax76/mpv.net)
 - [mpc-hc](https://mpc-hc.org) ([updated fork](https://github.com/clsid2/mpc-hc))
 - [VLC](https://www.videolan.org)
 
-<h3 id="qos-policies">11.41.7. QoS Policies <a href="#qos-policies">(permalink)</a></h3>
+<h3 id="qos-policies">11.42.7. QoS Policies <a href="#qos-policies">(permalink)</a></h3>
 
 Depending on your network and router configuration, QoS policies can be set in Windows to prioritize packets of an application.
 
@@ -1470,24 +1482,6 @@ Depending on your network and router configuration, QoS policies can be set in W
   ```bat
   reg add "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\QoS" /v "Do not use NLA" /t REG_SZ /d "1" /f
   ```
-
-<h2 id="game-bar">11.42. Game Bar <a href="#game-bar">(permalink)</a></h2>
-
-As explained in section [Register Game in Config Store](#register-game), Game Bar is needed to carry out the outlined steps. Depending on your configuration, Game Bar may or may not run each time a game is launched. If Game Bar access isn't frequently required, it can be disabled until it is needed (e.g. to register a new game in the config store). If Game Bar doesn't automatically launch, then it can be left enabled. Windows 11+ removed the option to toggle Game Bar in the settings so open CMD as administrator and use the commands below to toggle Game Bar.
-
-<h3 id="enable-game-bar-default">11.42.1. Enable Game Bar (default) <a href="#enable-game-bar-default">(permalink)</a></h3>
-
-```bat
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d "1" /f
-reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "1" /f
-```
-
-<h3 id="disable-game-bar">11.42.1. Disable Game Bar <a href="#disable-game-bar">(permalink)</a></h3>
-
-```bat
-reg add "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\GameDVR" /v "AppCaptureEnabled" /t REG_DWORD /d "0" /f
-reg add "HKCU\System\GameConfigStore" /v "GameDVR_Enabled" /t REG_DWORD /d "0" /f
-```
 
 <h2 id="kernel-mode-scheduling-interrupts-dpcs-and-more">11.43. Kernel-Mode Scheduling (Interrupts, DPCs and more) <a href="#kernel-mode-scheduling-interrupts-dpcs-and-more">(permalink)</a></h2>
 
